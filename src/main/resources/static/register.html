@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inscription - Bibliothèque Universitaire</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #c9d6ff, #e2e2e2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .register-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    input {
+      width: 90%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      transition: border 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #28a745;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .message {
+      margin-top: 1rem;
+      color: red;
+      display: none;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+  <script>
+    async function inscrire(event) {
+      event.preventDefault();
+      const nom = document.getElementById("nom").value.trim();
+      const prenom = document.getElementById("prenom").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message");
+
+      if (!email.endsWith("@email.com")) {
+        message.textContent = "L'adresse email doit se terminer par @email.com";
+        message.style.display = "block";
+        return;
+      }
+
+      const data = { nom, prenom, email };
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
+          window.location.href = "index.html";
+        } else {
+          message.textContent = "Erreur lors de l'inscription.";
+          message.style.display = "block";
+        }
+      } catch (error) {
+        message.textContent = "Erreur réseau.";
+        message.style.display = "block";
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="register-box">
+    <h1>Inscription Étudiant / Professeur</h1>
+    <form onsubmit="inscrire(event)">
+      <input type="text" id="nom" name="nom" placeholder="Nom" required /><br />
+      <input type="text" id="prenom" name="prenom" placeholder="Prénom" required /><br />
+      <input type="email" id="email" name="email" placeholder="Email (ex: prof@email.com)" required /><br />
+      <button type="submit">S'inscrire</button>
+    </form>
+    <div id="message" class="message"></div>
+    <p>Déjà inscrit ? <a href="index.html">Se connecter</a></p>
+  </div>
+</body>
+</html>

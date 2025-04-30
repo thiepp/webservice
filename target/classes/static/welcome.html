@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catalogue - Bibliothèque</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #007BFF;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .catalogue {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+
+    .livre {
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .livre:hover {
+      transform: translateY(-5px);
+    }
+
+    .livre h3 {
+      margin: 0 0 0.5rem;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('/api/livres')
+        .then(res => res.json())
+        .then(data => {
+          const catalogue = document.getElementById('catalogue');
+          data.forEach(livres => {
+            const card = document.createElement('div');
+            card.className = 'livres';
+            card.innerHTML = `
+              <h3>${livre.titre}</h3>
+              <p>Auteur : ${livre.auteur}</p>
+              <p>Année : ${livre.annee}</p>
+              <button onclick="reserver(${livre.id})">Réserver</button>
+            `;
+            catalogue.appendChild(card);
+          });
+        })
+        .catch(err => {
+          document.getElementById('catalogue').innerHTML = "Erreur de chargement du catalogue.";
+        });
+    });
+
+    function reserver(id) {
+      fetch(`/api/reservation/${id}`, {
+        method: 'POST'
+      })
+      .then(res => {
+        if (res.ok) {
+          alert('Réservation effectuée !');
+        } else {
+          alert('Erreur lors de la réservation.');
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Catalogue de la Bibliothèque</h1>
+    <p>Bienvenue ! Sélectionnez un livre à réserver.</p>
+  </header>
+
+  <section class="catalogue" id="catalogue">
+    <!-- Livres chargés dynamiquement -->
+  </section>
+
+  <footer>
+    <a href="reservation.html">Voir mes réservations</a>
+  </footer>
+</body>
+</html>

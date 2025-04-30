@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mes Réservations - Bibliothèque</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef1f5;
+      margin: 0;
+    }
+
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .container {
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .reservation {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.6rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-left: 5px solid #007bff;
+      transition: transform 0.2s;
+    }
+
+    .reservation:hover {
+      transform: translateY(-3px);
+    }
+
+    .statut {
+      font-weight: bold;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0.3rem;
+      display: inline-block;
+    }
+
+    .attente {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .valide {
+      background: #28a745;
+      color: white;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+
+  <script>
+    const emailUtilisateur = localStorage.getItem("email"); // récupéré depuis index.html
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!emailUtilisateur) {
+        alert("Aucun email détecté. Redirection...");
+        window.location.href = "index.html";
+        return;
+      }
+
+      fetch(`/api/mes-reservations?email=${encodeURIComponent(emailUtilisateur)}`)
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("reservations");
+          container.innerHTML = "";
+
+          if (data.length === 0) {
+            container.innerHTML = "<p>Aucune réservation trouvée.</p>";
+            return;
+          }
+
+          data.forEach(r => {
+            const div = document.createElement("div");
+            div.className = "reservation";
+            const statutClass = r.statut === "VALIDÉ" ? "valide" : "attente";
+            div.innerHTML = `
+              <h3>${r.livreTitre}</h3>
+              <p>Date de réservation : ${r.date}</p>
+              <span class="statut ${statutClass}">${r.statut}</span>
+            `;
+            container.appendChild(div);
+          });
+        })
+        .catch(() => {
+          document.getElementById("reservations").innerHTML = "Erreur lors du chargement.";
+        });
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Mes Réservations</h1>
+  </header>
+
+  <div class="container" id="reservations">
+    Chargement des réservations...
+  </div>
+
+  <footer>
+    <a href="welcome.html">Retour au catalogue</a>
+  </footer>
+</body>
+</html>
